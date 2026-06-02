@@ -148,7 +148,7 @@ local function getNearestPlayer()
     return nearestPlayer, nearestDistance
 end
 
-local Keybind = mrd:Keybind({
+mrd:Keybind({
     Title = "Instant Throw Keybind",
     Flag = "throw_key",
     Value = "Z", -- default key
@@ -162,7 +162,7 @@ local Keybind = mrd:Keybind({
     end
 })
 
-local Keybind = srf:Keybind({ 
+srf:Keybind({ 
     Title = "Instant Shoot Keybind",
     Flag = "shoot_key",
     Value = "X", -- default key
