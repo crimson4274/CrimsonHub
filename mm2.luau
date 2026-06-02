@@ -135,7 +135,7 @@ mrd:Button({
 })
 
 local function getNearestPlayer()
-    local myCF = Players.LocalPlayer.HumanoidRootPart.CFrame
+    local myCF = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
     local nearestPlayer, nearestDistance
     for _, player in Players:GetPlayers() do
         local char = player.Character
