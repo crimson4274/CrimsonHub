@@ -4,7 +4,7 @@ local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/rel
 local Window = WindUI:CreateWindow({
     Title = "Crimson Hub", -- window title
     Icon = "ethernet-port", -- lucide icon or "rbxassetid://" or URL. optional
-    Author = "by ilikewafflesMM2", -- window subtitle. optional
+    Author = "by zBlizzardzy", -- window subtitle. optional
     Theme = "Crimson",
     Folder = "CrimsonHubMM2"
 })
