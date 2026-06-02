@@ -57,7 +57,7 @@ local function grabGunTP(gunDrop)
     
     hrp.CFrame = gunDrop.CFrame
     
-    task.wait(0.25)
+    gunDrop.Destroying:Wait()
     
     hrp.CFrame = oldCF
 end
