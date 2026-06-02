@@ -79,7 +79,7 @@ general:Button({
     Title = "Grab Gun",
     Callback = function()
         local gunDrop = workspace:FindFirstChild("GunDrop", true)
-        if gunDrop and state then
+        if gunDrop then
             grabGunTP(gunDrop)
         end
     end
