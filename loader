@@ -1,0 +1,61 @@
+------------------------------------------------------------------------------------------------------------------
+--                                                                                                              --
+--     /$$$$$$            /$$                                                   /$$   /$$           /$$         --
+--    /$$__  $$          |__/                                                  | $$  | $$          | $$         --
+--   | $$  \__/  /$$$$$$  /$$ /$$$$$$/$$$$   /$$$$$$$  /$$$$$$  /$$$$$$$       | $$  | $$ /$$   /$$| $$$$$$$    --
+--   | $$       /$$__  $$| $$| $$_  $$_  $$ /$$_____/ /$$__  $$| $$__  $$      | $$$$$$$$| $$  | $$| $$__  $$   --
+--   | $$      | $$  \__/| $$| $$ \ $$ \ $$|  $$$$$$ | $$  \ $$| $$  \ $$      | $$__  $$| $$  | $$| $$  \ $$   --
+--   | $$    $$| $$      | $$| $$ | $$ | $$ \____  $$| $$  | $$| $$  | $$      | $$  | $$| $$  | $$| $$  | $$   --
+--   |  $$$$$$/| $$      | $$| $$ | $$ | $$ /$$$$$$$/|  $$$$$$/| $$  | $$      | $$  | $$|  $$$$$$/| $$$$$$$/   --
+--    \______/ |__/      |__/|__/ |__/ |__/|_______/  \______/ |__/  |__/      |__/  |__/ \______/ |_______/    --
+--                                                                                                              --
+------------------------------------------------------------------------------------------------------------------
+
+if not game:IsLoaded() then
+	game.Loaded:Wait()
+end
+
+local function runPlaceScript(url, chunkName)
+	if type(url) ~= "string" or url == "" then
+		return false
+	end
+
+	local ok, response = pcall(function()
+		return game:HttpGet(url)
+	end)
+
+	if not ok then
+		warn("[ CRIMSON HUB ] DataModel:HttpGet request failed (with):", url)
+		return false
+	end
+
+	if type(response) ~= "string" or response == "" then
+		warn("[ CRIMSON HUB ] Empty response (with):", url)
+		return false
+	end
+
+	local chunk, fail = loadstring(response, chunkName or url)
+	if not chunk then
+		warn("[ CRIMSON HUB ] Loadstring failed (with):", tostring(fail))
+		return false
+	end
+
+	local done, failed = pcall(chunk)
+	if not done then
+		warn("[ CRIMSON HUB ] Runtime error (with):", tostring(failed))
+		return false
+	end
+
+	return true
+end
+
+local placeLoaders = {
+	[142823291] = function()
+		task.spawn(runPlaceScript, "https://raw.githubusercontent.com/crimson4274/CrimsonHub/refs/heads/main/mm2.luau", "MurderMystery2")
+	end
+}
+
+local scriptLoader = placeLoaders[game.PlaceId]
+if scriptLoader then
+	scriptLoader()
+end
