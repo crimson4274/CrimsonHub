@@ -154,10 +154,9 @@ local Keybind = mrd:Keybind({
     Value = "K", -- default key
     Callback = function(key)
         local knife = getKnife(Players.LocalPlayer)
-        if not knife then warn("Could not find a knife in LocalPlayer's inventory.") return end
+        if not knife then return end
         local nearestPlayer, _ = getNearestPlayer()
-        print(nearestPlayer)
-        local chars = nearestPlayer.Character.HumanoidRootPart1
+        local chars = nearestPlayer.Character.Head
         knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, chars.CFrame)
     end
 })
@@ -170,7 +169,7 @@ local Keybind = srf:Keybind({
         local gun = getGun(Players.LocalPlayer)
         if not gun then return end
         local _, murderer = getRoles()
-        local chars = murderer.Character.HumanoidRootPart
+        local chars = murderer.Character.Head
         gun:WaitForChild("Shoot"):FireServer(gun.Handle.CFrame, chars.CFrame)
     end
 })
