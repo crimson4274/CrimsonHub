@@ -151,7 +151,7 @@ end
 local Keybind = mrd:Keybind({
     Title = "Instant Throw Keybind",
     Flag = "throw_key",
-    Value = "K", -- default key
+    Value = "Z", -- default key
     Callback = function(key)
         local knife = getKnife(Players.LocalPlayer)
         if not knife then return end
@@ -164,7 +164,7 @@ local Keybind = mrd:Keybind({
 local Keybind = srf:Keybind({ 
     Title = "Instant Shoot Keybind",
     Flag = "shoot_key",
-    Value = "H", -- default key
+    Value = "X", -- default key
     Callback = function(key)
         local gun = getGun(Players.LocalPlayer)
         if not gun then return end
