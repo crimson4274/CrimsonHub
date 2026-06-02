@@ -154,8 +154,9 @@ local Keybind = mrd:Keybind({
     Value = "Z", -- default key
     Callback = function(key)
         local knife = getKnife(Players.LocalPlayer)
-        if not knife then return end
+        if not knife then warn("Test") return end
         local nearestPlayer, _ = getNearestPlayer()
+        print(nearestPlayer)
         local chars = nearestPlayer.Character.Head
         knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, chars.CFrame)
     end
