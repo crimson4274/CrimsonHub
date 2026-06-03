@@ -52,7 +52,7 @@ local general = section:Tab({ Title = "General", Icon = "user" })
 local mrd = section:Tab({ Title = "Murderer", Icon = "skull" })
 local srf = section:Tab({ Title = "Sheriff", Icon = "crosshair" })
 
-Window:SelectTab(general)
+general:Select()
 
 local gunGrabToggle = false
 
