@@ -156,7 +156,9 @@ general:Toggle({
                 hidePlayerNames()
             end
         end)      
-        if
+        if not ok then
+            warn(fail)
+        end
     end
 })
 
