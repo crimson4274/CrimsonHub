@@ -127,7 +127,7 @@ general:Toggle({
     Value = false,
     Flag = "show_names",
     Callback = function(state)
-        local ok, fail = pcall(function()
+        task.spawn(function()
             if state then
                 conns.NamePlrAdd = Players.PlayerAdded:Connect(function(player)
                     showPlayerNames(player)
@@ -155,10 +155,7 @@ general:Toggle({
                 end
                 hidePlayerNames()
             end
-        end)      
-        if not ok then
-            warn(fail)
-        end
+        end)
     end
 })
 
