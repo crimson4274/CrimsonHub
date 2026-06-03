@@ -125,10 +125,14 @@ general:Toggle({
     Flag = "show_names",
     Callback = function(state)
         if state then
+            conns.NamePlrAdd = Players.PlayerAdded:Connect(function(player)
+                showPlayerNames(player)
+            end)
             for _, player in Players:GetPlayers() do
                 showPlayerNames(player)
             end
         else
+            conns.NamePlrAdd:Disconnect()
             hidePlayerNames()
         end
     end
