@@ -77,10 +77,12 @@ local function hidePlayerNames()
     for player, dd in ndd do
         if conns["ShowNames_" .. player.Name] then
             conns["ShowNames_" .. player.Name]:Disconnect()
+            conns["ShowNames_" .. player.Name] = nil
         end
 
         if conns["NameCharAdd_" .. player.Name] then
             conns["NameCharAdd_" .. player.Name]:Disconnect()
+            conns["NameCharAdd_" .. player.Name] = nil
         end
 
         ndd[player] = nil
@@ -108,6 +110,7 @@ local function showPlayerNames(player)
 
             if conns["ShowNames_" .. player.Name] then
                 conns["ShowNames_" .. player.Name]:Disconnect()
+                conns["ShowNames_" .. player.Name] = nil
             end
 
             hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
@@ -124,29 +127,36 @@ general:Toggle({
     Value = false,
     Flag = "show_names",
     Callback = function(state)
-        if state then
-            conns.NamePlrAdd = Players.PlayerAdded:Connect(function(player)
-                showPlayerNames(player)
-            end)
-            conns.NamePlrRem = Players.PlayerRemoving:Connect(function(player)
-                if conns["ShowNames_" .. player.Name] then
-                    conns["ShowNames_" .. player.Name]:Disconnect()
+        local ok, fail = pcall(function()
+            if state then
+                conns.NamePlrAdd = Players.PlayerAdded:Connect(function(player)
+                    showPlayerNames(player)
+                end)
+                conns.NamePlrRem = Players.PlayerRemoving:Connect(function(player)
+                    if conns["ShowNames_" .. player.Name] then
+                        conns["ShowNames_" .. player.Name]:Disconnect()
+                        conns["ShowNames_" .. player.Name] = nil
+                    end
+                    if conns["NameCharAdd_" .. player.Name] then
+                        conns["NameCharAdd_" .. player.Name]:Disconnect()
+                        conns["NameCharAdd_" .. player.Name] = nil
+                    end
+                    ndd[player] = nil
+                end)
+                for _, player in Players:GetPlayers() do
+                    showPlayerNames(player)
                 end
-                if conns["NameCharAdd_" .. player.Name] then
-                    conns["NameCharAdd_" .. player.Name]:Disconnect()
+            else
+                if conns.NamePlrAdd and conns.NamePlrRem then
+                    conns.NamePlrAdd:Disconnect()
+                    conns.NamePlrRem:Disconnect()
+                    conns.NamePlrAdd = nil
+                    conns.NamePlrRem = nil
                 end
-                ndd[player] = nil
-            end)
-            for _, player in Players:GetPlayers() do
-                showPlayerNames(player)
+                hidePlayerNames()
             end
-        else
-            if conns.NamePlrAdd and conns.NamePlrRem then
-                conns.NamePlrAdd:Disconnect()
-                conns.NamePlrRem:Disconnect()
-            end
-            hidePlayerNames()
-        end
+        end)      
+        if
     end
 })
 
@@ -375,6 +385,8 @@ local function toggleFly()
                 if conns.FlyInputBegan and conns.FlyInputEnded then
                     conns.FlyInputBegan:Disconnect()
                     conns.FlyInputEnded:Disconnect()
+                    conns.FlyInputBegan = nil
+                    conns.FlyInputEnded = nil
                 end
             end)
         end
@@ -412,6 +424,8 @@ local function toggleFly()
         if conns.FlyInputBegan and conns.FlyInputEnded then
             conns.FlyInputBegan:Disconnect()
             conns.FlyInputEnded:Disconnect()
+            conns.FlyInputBegan = nil
+            conns.FlyInputEnded = nil
         end
     end
 end
@@ -830,8 +844,9 @@ table.insert(conns, RunService.RenderStepped:Connect(function()
 end))
 
 Window:OnDestroy(function()
-    for _, conn in conns do
+    for key, conn in conns do
         conn:Disconnect()
+        conns[key] = nil
     end
     removeChams()
     removeGunEsp()
