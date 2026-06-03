@@ -119,7 +119,7 @@ general:Toggle({
     Flag = "show_names",
     Callback = function(state)
         if state then
-            for _, player in Players:GetPlayers() then
+            for _, player in Players:GetPlayers() do
                 showPlayerNames(player)
             end
         else
