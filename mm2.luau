@@ -128,7 +128,7 @@ general:Toggle({
             conns.NamePlrAdd = Players.PlayerAdded:Connect(function(player)
                 showPlayerNames(player)
             end)
-            conns.NamePlrRem = Players.PlayerAdded:Connect(function(player)
+            conns.NamePlrRem = Players.PlayerRemoving:Connect(function(player)
                 if conns["ShowNames_" .. player.Name] then
                     conns["ShowNames_" .. player.Name]:Disconnect()
                 end
