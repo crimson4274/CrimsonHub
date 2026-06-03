@@ -128,11 +128,23 @@ general:Toggle({
             conns.NamePlrAdd = Players.PlayerAdded:Connect(function(player)
                 showPlayerNames(player)
             end)
+            conns.NamePlrRem = Players.PlayerAdded:Connect(function(player)
+                if conns["ShowNames_" .. player.Name] then
+                    conns["ShowNames_" .. player.Name]:Disconnect()
+                end
+                if conns["NameCharAdd_" .. player.Name] then
+                    conns["NameCharAdd_" .. player.Name]:Disconnect()
+                end
+                ndd[player] = nil
+            end)
             for _, player in Players:GetPlayers() do
                 showPlayerNames(player)
             end
         else
-            conns.NamePlrAdd:Disconnect()
+            if conns.NamePlrAdd and conns.NamePlrRem then
+                conns.NamePlrAdd:Disconnect()
+                conns.NamePlrRem:Disconnect()
+            end
             hidePlayerNames()
         end
     end
