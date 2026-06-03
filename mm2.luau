@@ -12,7 +12,7 @@ local Window = WindUI:CreateWindow({
 Window:Tag({
   Title = "New",
   Icon = "sparkles",
-  Color = Color3.new(255, 170, 0)
+  Color = Color3.fromRGB(255, 200, 0)
 })
 
 local cfg = Window.ConfigManager:Config("CHConfig")
