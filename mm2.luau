@@ -9,6 +9,12 @@ local Window = WindUI:CreateWindow({
     Folder = "CrimsonHubMM2"
 })
 
+Window:Tag({
+  Title = "New",
+  Icon = "sparkles",
+  Color = Color3.new(255, 200, 0)
+})
+
 local cfg = Window.ConfigManager:Config("CHConfig")
 
 local section = Window:Section({
@@ -45,6 +51,8 @@ end
 local general = section:Tab({ Title = "General", Icon = "user" })
 local mrd = section:Tab({ Title = "Murderer", Icon = "skull" })
 local srf = section:Tab({ Title = "Sheriff", Icon = "crosshair" })
+
+Window:SelectTab(general)
 
 local gunGrabToggle = false
 
