@@ -258,7 +258,7 @@ mrd:Keybind({
         if not knife then return end
         if autoAimThrow then
             local nearestPlayer, _ = getNearestPlayer()
-            knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, nearestPlayer.Character.Torso.CFrame)
+            knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, nearestPlayer.Character.UpperTorso.CFrame)
         else
             knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, WeaponService:GetMouseTargetCFrame())
         end
@@ -273,7 +273,7 @@ srf:Keybind({
         local gun = getGun(Players.LocalPlayer)
         if not gun then return end
         local _, murd = getRoles()
-        gun:WaitForChild("Shoot"):FireServer(gun.Handle.CFrame, murd.Character.Torso.CFrame)
+        gun:WaitForChild("Shoot"):FireServer(gun.Handle.CFrame, murd.Character.UpperTorso.CFrame)
     end
 })
 
