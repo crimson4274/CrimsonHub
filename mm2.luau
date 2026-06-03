@@ -71,7 +71,43 @@ local function grabGunTP(gunDrop)
 end
 
 local conns = {}
-local dispDist = 100
+local ndd = {}
+
+local function showPlayerNames(player)
+    if player.Character then
+        local char = player.Character
+        local hum = char.Humanoid
+        ndd[player] = {hum, hum.NameDisplayDistance}
+
+        conns["ShowNames_" .. player.Name] = hum:GetPropertyChangedSignal("NameDisplayDistance"):Connect(function()
+            ndd[player] = {hum, hum.NameDisplayDistance}
+            hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
+        end)
+
+        table.insert(conns, player.CharacterAdded:Connect(function(new)
+            char = new
+            hum = char.Humanoid
+            ndd[player] = {hum, hum.NameDisplayDistance}
+            if conns["ShowNames_" .. player.Name] then
+                conns["ShowNames_" .. player.Name]:Disconnect()
+            end
+            conns["ShowNames_" .. player.Name] = hum:GetPropertyChangedSignal("NameDisplayDistance"):Connect(function()
+                ndd[player] = {hum, hum.NameDisplayDistance}
+                hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
+            end)
+        end))
+    end
+end
+
+local function hidePlayerNames()
+    for player, dd in ndd do
+        if conns["ShowNames_" .. player.Name] then
+            conns["ShowNames_" .. player.Name]:Disconnect()
+        end
+        ndd[player] = nil
+        dd[1].NameDisplayDistance = dd[2]
+    end
+end
 
 general:Toggle({
     Title = "Show Player Names",
@@ -79,14 +115,11 @@ general:Toggle({
     Flag = "show_names",
     Callback = function(state)
         if state then
-            conns.ShowNames = game.StarterPlayer:GetPropertyChangedSignal("NameDisplayDistance"):Connect(function()
-                if game.StarterPlayer.NameDisplayDistance < 10 then
-                    game.StarterPlayer.NameDisplayDistance = dispDist
-                end
-            end)
+            for _, player in Players:GetPlayers() then
+                showPlayerNames(player)
+            end
         else
-            conns.ShowNames:Disconnect()
-            game.StarterPlayer.NameDisplayDistance = 0
+            hidePlayerNames()
         end
     end
 })
@@ -777,6 +810,7 @@ Window:OnDestroy(function()
     removeChams()
     removeGunEsp()
     removeCoinEsp()
+    hidePlayerNames()
     coinFarmState = false
     flying = false
     toggleFly()
