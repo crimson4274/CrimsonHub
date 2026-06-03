@@ -79,6 +79,7 @@ local function showPlayerNames(player)
         local hum = char.Humanoid
         ndd[player] = {hum, hum.NameDisplayDistance}
 
+        hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
         conns["ShowNames_" .. player.Name] = hum:GetPropertyChangedSignal("NameDisplayDistance"):Connect(function()
             ndd[player] = {hum, hum.NameDisplayDistance}
             hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
@@ -88,9 +89,12 @@ local function showPlayerNames(player)
             char = new
             hum = char.Humanoid
             ndd[player] = {hum, hum.NameDisplayDistance}
+
             if conns["ShowNames_" .. player.Name] then
                 conns["ShowNames_" .. player.Name]:Disconnect()
             end
+
+            hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
             conns["ShowNames_" .. player.Name] = hum:GetPropertyChangedSignal("NameDisplayDistance"):Connect(function()
                 ndd[player] = {hum, hum.NameDisplayDistance}
                 hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
