@@ -73,7 +73,23 @@ end
 local conns = {}
 local ndd = {}
 
+local function hidePlayerNames()
+    for player, dd in ndd do
+        if conns["ShowNames_" .. player.Name] then
+            conns["ShowNames_" .. player.Name]:Disconnect()
+        end
+
+        if conns["NameCharAdd_" .. player.Name] then
+            conns["NameCharAdd_" .. player.Name]:Disconnect()
+        end
+
+        ndd[player] = nil
+        dd[1].NameDisplayDistance = dd[2]
+    end
+end
+
 local function showPlayerNames(player)
+    hidePlayerNames()
     if player.Character then
         local char = player.Character
         local hum = char.Humanoid
@@ -85,9 +101,9 @@ local function showPlayerNames(player)
             hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
         end)
 
-        table.insert(conns, player.CharacterAdded:Connect(function(new)
+        conns["NameCharAdd_" .. player.Name] = player.CharacterAdded:Connect(function(new)
             char = new
-            hum = char.Humanoid
+            hum = char:WaitForChild("Humanoid")
             ndd[player] = {hum, hum.NameDisplayDistance}
 
             if conns["ShowNames_" .. player.Name] then
@@ -99,17 +115,7 @@ local function showPlayerNames(player)
                 ndd[player] = {hum, hum.NameDisplayDistance}
                 hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
             end)
-        end))
-    end
-end
-
-local function hidePlayerNames()
-    for player, dd in ndd do
-        if conns["ShowNames_" .. player.Name] then
-            conns["ShowNames_" .. player.Name]:Disconnect()
-        end
-        ndd[player] = nil
-        dd[1].NameDisplayDistance = dd[2]
+        end)
     end
 end
 
