@@ -70,6 +70,27 @@ local function grabGunTP(gunDrop)
     hrp.CFrame = oldCF
 end
 
+local conns = {}
+local dispDist = 100
+
+general:Toggle({
+    Title = "Show Player Names",
+    Value = false,
+    Flag = "show_names",
+    Callback = function(state)
+        if state then
+            conns.ShowNames = game.StarterPlayer:GetPropertyChangedSignal("NameDisplayDistance"):Connect(function()
+                if game.StarterPlayer.NameDisplayDistance < 10 then
+                    game.StarterPlayer.NameDisplayDistance = dispDist
+                end
+            end)
+        else
+            conns.ShowNames:Disconnect()
+            game.StarterPlayer.NameDisplayDistance = 0
+        end
+    end
+})
+
 general:Toggle({
     Title = "Auto Gun Grab",
     Value = false,
@@ -156,6 +177,19 @@ local function getNearestPlayer()
     return nearestPlayer, nearestDistance
 end
 
+local autoAimThrow = false
+
+mrd:Toggle({
+    Title = "Auto Aim Throw",
+    Value = false,
+    Flag = "auto_aim_throw",
+    Callback = function(state)
+        autoAimThrow = state
+    end
+})
+
+local WeaponService = require(game:GetService("ReplicatedStorage"):WaitForChild("ClientServices"):WaitForChild("WeaponService"))
+
 mrd:Keybind({
     Title = "Instant Throw Keybind",
     Flag = "throw_key",
@@ -163,9 +197,12 @@ mrd:Keybind({
     Callback = function(key)
         local knife = getKnife(Players.LocalPlayer)
         if not knife then return end
-        local nearestPlayer, _ = getNearestPlayer()
-        local chars = nearestPlayer.Character.Head
-        knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, chars.CFrame)
+        if autoAimThrow then
+            local nearestPlayer, _ = getNearestPlayer()
+            knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, nearestPlayer.Character.Torso.CFrame)
+        else
+            knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, WeaponService:GetMouseTargetCFrame())
+        end
     end
 })
 
@@ -176,9 +213,8 @@ srf:Keybind({
     Callback = function(key)
         local gun = getGun(Players.LocalPlayer)
         if not gun then return end
-        local _, murderer = getRoles()
-        local chars = murderer.Character.Head
-        gun:WaitForChild("Shoot"):FireServer(gun.Handle.CFrame, chars.CFrame)
+        local _, murd = getRoles()
+        gun:WaitForChild("Shoot"):FireServer(gun.Handle.CFrame, murd.Character.Torso.CFrame)
     end
 })
 
@@ -210,8 +246,6 @@ locp:Slider({
 
 local invincible = false
 local RunService = game:GetService("RunService")
-
-local conns = {}
 
 locp:Toggle({
     Title = "Noclip (BROKEN)",
