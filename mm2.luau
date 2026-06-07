@@ -54,7 +54,7 @@ local CurrentRoundClient = require(ReplicatedStorage:WaitForChild("Modules").Cur
 local conns = {}
 
 local function updateChams()
-    local playerData = CurrentRoundClient.GetLatestPlayerData:InvokeServer()
+    local playerData = CurrentRoundClient.GetLatestPlayerData()
     if next(playerData) == nil then
         sheriff = nil
         murderer = nil
