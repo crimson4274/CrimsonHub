@@ -51,6 +51,8 @@ local Players = game:GetService("Players")
 
 local CurrentRoundClient = require(ReplicatedStorage:WaitForChild("Modules").CurrentRoundClient)
 
+local conns = {}
+
 local function updateChams()
     if next(CurrentRoundClient.PlayerData) == nil then
         sheriff = nil
@@ -100,8 +102,12 @@ general:Select()
 
 local gunGrabToggle = false
 
+local function getKnifeLocalPlayer()
+    return Players.LocalPlayer.Backpack:FindFirstChild("Knife")
+end
+
 local function grabGun(gunDrop)
-    if getKnife(Players.LocalPlayer) then return end
+    if getKnifeLocalPlayer() then return end
     if not gunDrop then return end
     
     local head = Players.LocalPlayer.Character.UpperTorso
@@ -109,7 +115,6 @@ local function grabGun(gunDrop)
     task.delay(0, firetouchinterest, head, gunDrop, false)
 end
 
-local conns = {}
 local ndd = {}
 
 local function hidePlayerNames()
@@ -196,7 +201,7 @@ general:Toggle({
             end
         end)
     end
-})
+}):Lock()
 
 general:Toggle({
     Title = "Auto Gun Grab",
@@ -301,7 +306,7 @@ mrd:Keybind({
     Flag = "throw_key",
     Value = "Z", -- default key
     Callback = function(key)
-        local knife = getKnife(Players.LocalPlayer)
+        local knife = Players.LocalPlayer.Backpack:FindFirstChild("Knife")
         if not knife then return end
         if autoAimThrow then
             local nearestPlayer, _ = getNearestPlayer()
@@ -317,9 +322,8 @@ srf:Keybind({
     Flag = "shoot_key",
     Value = "X", -- default key
     Callback = function(key)
-        local gun = getGun(Players.LocalPlayer)
-        if not gun then return end
-        if not murderer then return end
+        local gun = Players.LocalPlayer.Backpack:FindFirstChild("Gun")
+        if not gun or not murderer then return end
         firesignal(gun.Shoot, gun.Handle.CFrame, murderer.Character.UpperTorso.CFrame)
     end
 })
