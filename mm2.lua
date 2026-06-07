@@ -52,6 +52,9 @@ local Players = game:GetService("Players")
 local CurrentRoundClient = require(ReplicatedStorage:WaitForChild("Modules").CurrentRoundClient)
 
 local conns = {}
+local playerData = {}
+
+
 
 local function updateChams()
     local playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
@@ -107,12 +110,8 @@ general:Select()
 
 local gunGrabToggle = false
 
-local function getKnifeLocalPlayer()
-    return Players.LocalPlayer.Backpack:FindFirstChild("Knife")
-end
-
 local function grabGun(gunDrop)
-    if getKnifeLocalPlayer() then return end
+    if Players.LocalPlayer.Backpack:FindFirstChild("Knife") or Players.LocalPlayer.Character:FindFirstChild("Knife") then return end
     if not gunDrop then return end
     
     local head = Players.LocalPlayer.Character.UpperTorso
@@ -311,13 +310,13 @@ mrd:Keybind({
     Flag = "throw_key",
     Value = "Z", -- default key
     Callback = function(key)
-        local knife = Players.LocalPlayer.Backpack:FindFirstChild("Knife")
+        local knife = Players.LocalPlayer.Character:FindFirstChild("Knife")
         if not knife then return end
         if autoAimThrow then
             local nearestPlayer, _ = getNearestPlayer()
-            firesignal(knife.Events.KnifeThrown, knife.Handle.CFrame, nearestPlayer.Character.UpperTorso.CFrame)
+            knife.Events.KnifeThrown:FireServer(knife.Handle.CFrame, nearestPlayer.Character.UpperTorso.CFrame)
         else
-            firesignal(knife.Events.KnifeThrown, knife.Handle.CFrame, WeaponService:GetMouseTargetCFrame())
+            knife.Events.KnifeThrown:FireServer(knife.Handle.CFrame, WeaponService:GetMouseTargetCFrame())
         end
     end
 })
@@ -329,7 +328,7 @@ srf:Keybind({
     Callback = function(key)
         local gun = Players.LocalPlayer.Character:FindFirstChild("Gun")
         if not gun or not murderer then return end
-        firesignal(gun.Shoot, gun.Handle.CFrame, murderer.Character.UpperTorso.CFrame)
+        gun.Shoot:FireServer(gun.Handle.CFrame, murderer.Character.UpperTorso.CFrame)
     end
 })
 
