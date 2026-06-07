@@ -54,7 +54,8 @@ local CurrentRoundClient = require(ReplicatedStorage:WaitForChild("Modules").Cur
 local conns = {}
 
 local function updateChams()
-    if next(CurrentRoundClient.PlayerData) == nil then
+    local playerData = CurrentRoundClient.GetLatestPlayerData:InvokeServer()
+    if next(playerData) == nil then
         sheriff = nil
         murderer = nil
         if chamsToggle then
@@ -64,9 +65,10 @@ local function updateChams()
             end
         end
     end
-    for plr, data in CurrentRoundClient.PlayerData do
+    for plr, data in playerData do
         task.spawn(function()
-            local player = game:GetService("Players"):FindFirstChild(plr)
+            print(plr)
+            local player = Players:FindFirstChild(plr)
             local char = player.Character or player.CharacterAdded:Wait()
             if data.Dead or data.Role == "Innocent" then
                 if data.Role == "Murderer" then
