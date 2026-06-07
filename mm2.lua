@@ -70,7 +70,6 @@ table.insert(conns, RunService.RenderStepped:Connect(function()
     end
     for plr, data in playerData do
         task.spawn(function()
-            print(data.Dead, data.Role, data.UserId)
             local player = Players:GetPlayerByUserId(data.UserId)
             if player == Players.LocalPlayer or not player then return end
             local char = player.Character or player.CharacterAdded:Wait()
