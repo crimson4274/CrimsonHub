@@ -55,7 +55,7 @@ local conns = {}
 
 local function updateChams()
     local playerData = CurrentRoundClient.GetLatestPlayerData()
-    print(playerData)
+    print(next(playerData))
     if next(playerData) == nil then
         sheriff = nil
         murderer = nil
