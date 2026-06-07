@@ -23,36 +23,74 @@ local section = Window:Section({
     Opened = true
 })
 
-local function getKnife(player)
-    if not player:FindFirstChild("Backpack") then
-        return nil
+local function applyChams(char, color)
+    if not char then return end
+    
+    local hl = char:FindFirstChild("espHl")
+    if hl then
+        hl.FillColor = color
+        hl.OutlineColor = color
+        return
     end
-    local char = player.Character
-    local knife = char:FindFirstChild("Knife") or player.Backpack:FindFirstChild("Knife")
-    return knife
+    
+    local h = Instance.new("Highlight")
+    h.Name = "espHl"
+    h.FillTransparency = 0.5
+    h.OutlineTransparency = 0.25
+    h.FillColor = color
+    h.OutlineColor = color
+    h.Parent = char
 end
 
-local function getGun(player)
-    if not player:FindFirstChild("Backpack") then
-        return nil
-    end
-    local char = player.Character
-    local gun = char:FindFirstChild("Gun") or player.Backpack:FindFirstChild("Gun")
-    return gun
-end
+local chamsToggle = false
 
+local sheriff, murderer = nil, nil
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
-local function getRoles()
-    local sheriff, murderer
-    for _, player in Players:GetPlayers() do
-        if player.Character then
-            if getKnife(player) then murderer = player end
-            if getGun(player) then sheriff = player end
+local CurrentRoundClient = require(ReplicatedStorage:WaitForChild("Modules").CurrentRoundClient)
+
+local function updateChams()
+    if next(CurrentRoundClient.PlayerData) == nil then
+        sheriff = nil
+        murderer = nil
+        if chamsToggle then
+            for _, player in Players:GetPlayers() do
+                local char = player.Character or player.CharacterAdded:Wait()
+                applyChams(char, Color3.new(0, 1, 0))
+            end
         end
     end
-    return sheriff, murderer
+    for plr, data in CurrentRoundClient.PlayerData do
+        task.spawn(function()
+            local player = game:GetService("Players"):FindFirstChild(plr)
+            local char = player.Character or player.CharacterAdded:Wait()
+            if data.Dead or data.Role == "Innocent" then
+                if data.Role == "Murderer" then
+                    murderer = nil
+                elseif data.Role == "Sheriff" then
+                    sheriff = nil
+                end
+                if chamsToggle then
+                    applyChams(char, Color3.new(0, 1, 0))
+                end
+            elseif data.Role == "Sheriff" then
+                sheriff = player
+                if chamsToggle then
+                    applyChams(char, Color3.new(0, 1, 0))
+                end
+            elseif data.Role == "Murderer" then
+                murderer = player
+                if chamsToggle then
+                    applyChams(char, Color3.new(0, 1, 0))
+                end
+            end
+        end)
+    end
 end
+
+table.insert(conns, CurrentRoundClient.PlayerDataChanged.Event:Connect(updateChams))
 
 local general = section:Tab({ Title = "General", Icon = "user" })
 local mrd = section:Tab({ Title = "Murderer", Icon = "skull" })
@@ -68,7 +106,7 @@ local function grabGun(gunDrop)
     
     local head = Players.LocalPlayer.Character.UpperTorso
     firetouchinterest(head, gunDrop, true)
-    task.delay(.5, firetouchinterest, head, gunDrop, false)
+    task.delay(0, firetouchinterest, head, gunDrop, false)
 end
 
 local conns = {}
@@ -193,9 +231,8 @@ general:Button({
     Callback = function()
         local myCF = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
         local targetCF = myCF + myCF.LookVector * 3
-        local sher, _ = getRoles()
-        if sher == Players.LocalPlayer then warn("Error") return end
-        local char = sher.Character
+        if sheriff == Players.LocalPlayer or sheriff == nil then warn("Error") return end
+        local char = sheriff.Character
         char.HumanoidRootPart.Anchored = true
         char.HumanoidRootPart.CFrame = CFrame.new(targetCF.Position, Vector3.new(myCF.Position.X, targetCF.Position.Y, myCF.Position.Z))
     end
@@ -268,9 +305,9 @@ mrd:Keybind({
         if not knife then return end
         if autoAimThrow then
             local nearestPlayer, _ = getNearestPlayer()
-            knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, nearestPlayer.Character.UpperTorso.CFrame)
+            firesignal(knife.Events.KnifeThrown, knife.Handle.CFrame, nearestPlayer.Character.UpperTorso.CFrame)
         else
-            knife:WaitForChild("Events"):WaitForChild("KnifeThrown"):FireServer(knife.Handle.CFrame, WeaponService:GetMouseTargetCFrame())
+            firesignal(knife.Events.KnifeThrown, knife.Handle.CFrame, WeaponService:GetMouseTargetCFrame())
         end
     end
 })
@@ -282,8 +319,8 @@ srf:Keybind({
     Callback = function(key)
         local gun = getGun(Players.LocalPlayer)
         if not gun then return end
-        local _, murd = getRoles()
-        gun:WaitForChild("Shoot"):FireServer(gun.Handle.CFrame, murd.Character.UpperTorso.CFrame)
+        if not murderer then return end
+        firesignal(gun.Shoot, gun.Handle.CFrame, murderer.Character.UpperTorso.CFrame)
     end
 })
 
@@ -458,27 +495,6 @@ locp:Toggle({
 
 local esp = section:Tab({ Title = "ESP", Icon = "square-dashed-top-solid" })
 
-local function applyChams(char, color)
-    if not char then return end
-    
-    local hl = char:FindFirstChild("espHl")
-    if hl then
-        hl.FillColor = color
-        hl.OutlineColor = color
-        return
-    end
-    
-    local h = Instance.new("Highlight")
-    h.Name = "espHl"
-    h.FillTransparency = 0.5
-    h.OutlineTransparency = 0.25
-    h.FillColor = color
-    h.OutlineColor = color
-    h.Parent = char
-end
-
-local chamsToggle = false
-
 local function removeChams()
     for _, player in Players:GetPlayers() do
         if player.Character then
@@ -497,6 +513,8 @@ esp:Toggle({
         chamsToggle = state
         if state == false then
             removeChams()
+        else
+            updateChams()
         end
     end
 })
@@ -609,16 +627,6 @@ esp:Toggle({
     end
 })
 
-local function getRoleColor(player)
-    local s, m = getRoles()
-    if s == player then
-        return Color3.fromRGB(0,100,255)
-    elseif m == player then
-        return Color3.new(1,0,0)
-    end
-    return Color3.new(0,1,0)
-end
-
 local tprts = section:Tab({ Title = "Teleports", Icon = "map-pinned" })
 
 tprts:Button({
@@ -627,8 +635,8 @@ tprts:Button({
     IconAlign = "Left",
     Callback = function()
         local hrp = Players.LocalPlayer.Character.HumanoidRootPart
-        local _, murd = getRoles()
-        local chara = murd.Character
+        if not murderer then return end
+        local chara = murderer.Character
         if chara then
             hrp.CFrame = chara.HumanoidRootPart.CFrame + Vector3.new(0, 0, 2)
         end
@@ -641,8 +649,8 @@ tprts:Button({
     IconAlign = "Left",
     Callback = function()
         local hrp = Players.LocalPlayer.Character.HumanoidRootPart
-        local sher, _ = getRoles()
-        local chara = sher.Character
+        if not sheriff then return end
+        local chara = sheriff.Character
         if chara then
             hrp.CFrame = chara.HumanoidRootPart.CFrame + Vector3.new(0, 0, 2)
         end
@@ -831,17 +839,6 @@ local uiToggle = settings:Keybind({
         Window:Toggle()
     end
 })
-
-table.insert(conns, RunService.RenderStepped:Connect(function()
-    if chamsToggle then
-        for _, player in Players:GetPlayers() do
-            if player ~= Players.LocalPlayer and player.Character then
-                local color = getRoleColor(player)
-                applyChams(player.Character, color)
-            end
-        end
-    end
-end))
 
 Window:OnDestroy(function()
     for key, conn in conns do
