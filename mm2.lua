@@ -754,16 +754,22 @@ local Dropdown = tprts:Dropdown({
     Title = "Player TP",
     Values = GetPlayerNames(),
     Callback = function(selected)
-        print("Selected:", selected)
+        local hrp = Players.LocalPlayer.Character.HumanoidRootPart
+        local target = Players:FindFirstChild(selected)
+        if not target then return end
+        local chara = target.Character
+        if chara then
+            hrp.CFrame = chara.HumanoidRootPart.CFrame + Vector3.new(0, 0, 2)
+        end
     end
 })
 
 Players.PlayerAdded:Connect(function(new)
-    Dropdown.Values = GetPlayerNames()
+    Dropdown:Refresh(GetPlayerNames())
 end)
 
 Players.PlayerRemoving:Connect(function(old)
-    Dropdown.Values = GetPlayerNames()
+    Dropdown:Refresh(GetPlayerNames())
 end)
 
 local farm = section:Tab({ Title = "Farm", Icon = "coins" })
