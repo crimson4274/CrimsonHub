@@ -71,7 +71,7 @@ local function updateChams()
         task.spawn(function()
             print(data.Dead, data.Role, data.UserId)
             local player = Players:GetPlayerByUserId(data.UserId)
-            if player == Players.LocalPlayer then return end
+            if player == Players.LocalPlayer or not player then return end
             local char = player.Character or player.CharacterAdded:Wait()
             if data.Dead or data.Role == "Innocent" then
                 if data.Role == "Murderer" then
@@ -83,11 +83,13 @@ local function updateChams()
                     applyChams(char, Color3.new(0, 1, 0))
                 end
             elseif data.Role == "Sheriff" then
+                print("Sheriff found")
                 sheriff = player
                 if chamsToggle then
                     applyChams(char, Color3.new(0, 1, 0))
                 end
             elseif data.Role == "Murderer" then
+                print("Murderer found")
                 murderer = player
                 if chamsToggle then
                     applyChams(char, Color3.new(0, 1, 0))
