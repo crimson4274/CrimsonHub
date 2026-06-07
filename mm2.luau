@@ -557,7 +557,7 @@ table.insert(conns, workspace.DescendantAdded:Connect(function(gunDrop)
         end
         
         if gunGrabToggle then
-            grabGunTP(gunDrop)
+            grabGun(gunDrop)
         end
     end
     
