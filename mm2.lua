@@ -54,15 +54,16 @@ local CurrentRoundClient = require(ReplicatedStorage:WaitForChild("Modules").Cur
 local conns = {}
 
 local function updateChams()
-    local playerData = CurrentRoundClient.GetLatestPlayerData()
-    print(next(playerData))
+    local playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
     if next(playerData) == nil then
         sheriff = nil
         murderer = nil
         if chamsToggle then
             for _, player in Players:GetPlayers() do
-                local char = player.Character or player.CharacterAdded:Wait()
-                applyChams(char, Color3.new(0, 1, 0))
+                if player ~= Players.LocalPlayer then
+                    local char = player.Character or player.CharacterAdded:Wait()
+                    applyChams(char, Color3.new(0, 1, 0))
+                end
             end
         end
     end
