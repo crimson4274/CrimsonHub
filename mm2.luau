@@ -61,13 +61,7 @@ local function grabGunTP(gunDrop)
     if not gunDrop then return end
     
     local hrp = Players.LocalPlayer.Character.HumanoidRootPart
-    local oldCF = hrp.CFrame
-    
-    hrp.CFrame = gunDrop.CFrame
-    
-    gunDrop.Destroying:Wait()
-    
-    hrp.CFrame = oldCF
+    gunDrop.CFrame = hrp
 end
 
 local conns = {}
