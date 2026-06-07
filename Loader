@@ -51,7 +51,7 @@ end
 
 local placeLoaders = {
 	[142823291] = function()
-		task.spawn(runPlaceScript, "https://raw.githubusercontent.com/crimson4274/CrimsonHub/refs/heads/main/mm2.luau", "MurderMystery2")
+		task.spawn(runPlaceScript, "https://raw.githubusercontent.com/crimson4274/CrimsonHub/refs/heads/main/mm2.lua", "MurderMystery2")
 	end
 }
 
