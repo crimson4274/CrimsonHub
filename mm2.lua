@@ -48,16 +48,14 @@ local sheriff, murderer = nil, nil
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 local CurrentRoundClient = require(ReplicatedStorage:WaitForChild("Modules").CurrentRoundClient)
 
 local conns = {}
 local playerData = {}
 
-
-
-local function updateChams()
-    local playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
+table.insert(conns, RunService.RenderStepped:Connect(function()
     if next(playerData) == nil then
         sheriff = nil
         murderer = nil
@@ -98,9 +96,11 @@ local function updateChams()
             end
         end)
     end
-end
+end))
 
-table.insert(conns, CurrentRoundClient.PlayerDataChanged.Event:Connect(updateChams))
+table.insert(conns, CurrentRoundClient.PlayerDataChanged.Event:Connect(function()
+    playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
+end))
 
 local general = section:Tab({ Title = "General", Icon = "user" })
 local mrd = section:Tab({ Title = "Murderer", Icon = "skull" })
@@ -359,7 +359,6 @@ locp:Slider({
 })
 
 local invincible = false
-local RunService = game:GetService("RunService")
 
 locp:Toggle({
     Title = "Noclip (BROKEN)",
