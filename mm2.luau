@@ -56,12 +56,12 @@ general:Select()
 
 local gunGrabToggle = false
 
-local function grabGunTP(gunDrop)
+local function grabGun(gunDrop)
     if getKnife(Players.LocalPlayer) then return end
     if not gunDrop then return end
     
-    local hrp = Players.LocalPlayer.Character.HumanoidRootPart
-    gunDrop.CFrame = hrp
+    local head = Players.LocalPlayer.Character.Head
+    firetouchinterest(head, gunDrop, true)
 end
 
 local conns = {}
@@ -161,7 +161,7 @@ general:Toggle({
         gunGrabToggle = state
         local gunDrop = workspace:FindFirstChild("GunDrop", true)
         if gunDrop and state then
-            grabGunTP(gunDrop)
+            grabGun(gunDrop)
         end
     end
 })
@@ -171,7 +171,7 @@ general:Button({
     Callback = function()
         local gunDrop = workspace:FindFirstChild("GunDrop", true)
         if gunDrop then
-            grabGunTP(gunDrop)
+            grabGun(gunDrop)
         end
     end
 })
