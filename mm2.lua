@@ -76,13 +76,13 @@ local function updateChams()
             if data.Dead or data.Role == "Innocent" then
                 if data.Role == "Murderer" then
                     murderer = nil
-                elseif data.Role == "Sheriff" then
+                elseif data.Role == "Sheriff" or data.Role == "Hero" then
                     sheriff = nil
                 end
                 if chamsToggle then
                     applyChams(char, Color3.new(0, 1, 0))
                 end
-            elseif data.Role == "Sheriff" then
+            elseif data.Role == "Sheriff" or data.Role == "Hero" then
                 sheriff = player
                 if chamsToggle then
                     applyChams(char, Color3.new(0, 0.4, 1))
@@ -327,7 +327,7 @@ srf:Keybind({
     Flag = "shoot_key",
     Value = "X", -- default key
     Callback = function(key)
-        local gun = Players.LocalPlayer.Backpack:FindFirstChild("Gun")
+        local gun = Players.LocalPlayer.Character:FindFirstChild("Gun")
         if not gun or not murderer then return end
         firesignal(gun.Shoot, gun.Handle.CFrame, murderer.Character.UpperTorso.CFrame)
     end
