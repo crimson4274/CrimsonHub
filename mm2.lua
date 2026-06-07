@@ -745,10 +745,9 @@ tprts:Divider()
 local function GetPlayerNames()
     local playerList = Players:GetPlayers()
     for index, value in playerList do
-        if value ~= Players.LocalPlayer then
-            playerList[index] = value.Name
-        end
+        playerList[index] = value.Name
     end
+    table.remove(playerList, table.find(playerList, Players.LocalPlayer.Name))
     return playerList
 end
 
