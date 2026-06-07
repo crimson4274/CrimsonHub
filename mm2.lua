@@ -15,8 +15,6 @@ Window:Tag({
   Color = Color3.fromRGB(255, 200, 0)
 })
 
-local cfg = Window.ConfigManager:Config("CHConfig")
-
 local section = Window:Section({
     Title = "Roles",
     Icon = "user-cog",
@@ -53,7 +51,7 @@ local RunService = game:GetService("RunService")
 local CurrentRoundClient = require(ReplicatedStorage:WaitForChild("Modules").CurrentRoundClient)
 
 local conns = {}
-local playerData = {}
+local playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
 
 table.insert(conns, RunService.RenderStepped:Connect(function()
     if next(playerData) == nil then
@@ -519,8 +517,6 @@ esp:Toggle({
         chamsToggle = state
         if state == false then
             removeChams()
-        else
-            playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
         end
     end
 })
@@ -845,6 +841,8 @@ local uiToggle = settings:Keybind({
         Window:Toggle()
     end
 })
+
+local cfg = Window.ConfigManager:Config("CHConfig")
 
 Window:OnDestroy(function()
     for key, conn in conns do
