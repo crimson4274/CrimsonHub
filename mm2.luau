@@ -67,8 +67,9 @@ local function updateChams()
     end
     for plr, data in playerData do
         task.spawn(function()
-            print(plr)
-            local player = Players:FindFirstChild(plr)
+            print(data.Dead, data.Role, data.UserId)
+            local player = Players:GetPlayerByUserId(data.UserId)
+            if player == Players.LocalPlayer then return end
             local char = player.Character or player.CharacterAdded:Wait()
             if data.Dead or data.Role == "Innocent" then
                 if data.Role == "Murderer" then
