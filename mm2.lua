@@ -83,16 +83,14 @@ local function updateChams()
                     applyChams(char, Color3.new(0, 1, 0))
                 end
             elseif data.Role == "Sheriff" then
-                print("Sheriff found")
                 sheriff = player
                 if chamsToggle then
-                    applyChams(char, Color3.new(0, 1, 0))
+                    applyChams(char, Color3.new(0, 0.4, 1))
                 end
             elseif data.Role == "Murderer" then
-                print("Murderer found")
                 murderer = player
                 if chamsToggle then
-                    applyChams(char, Color3.new(0, 1, 0))
+                    applyChams(char, Color3.new(1, 0, 0))
                 end
             end
         end)
