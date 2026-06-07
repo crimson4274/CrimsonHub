@@ -24,12 +24,18 @@ local section = Window:Section({
 })
 
 local function getKnife(player)
+    if not player:FindFirstChild("Backpack") then
+        return nil
+    end
     local char = player.Character
     local knife = char:FindFirstChild("Knife") or player.Backpack:FindFirstChild("Knife")
     return knife
 end
 
 local function getGun(player)
+    if not player:FindFirstChild("Backpack") then
+        return nil
+    end
     local char = player.Character
     local gun = char:FindFirstChild("Gun") or player.Backpack:FindFirstChild("Gun")
     return gun
@@ -60,8 +66,9 @@ local function grabGun(gunDrop)
     if getKnife(Players.LocalPlayer) then return end
     if not gunDrop then return end
     
-    local head = Players.LocalPlayer.Character.Head
+    local head = Players.LocalPlayer.Character.UpperTorso
     firetouchinterest(head, gunDrop, true)
+    task.delay(.5, firetouchinterest, head, gunDrop, false)
 end
 
 local conns = {}
