@@ -521,7 +521,7 @@ esp:Toggle({
         if state == false then
             removeChams()
         else
-            updateChams()
+            playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
         end
     end
 })
