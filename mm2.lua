@@ -745,7 +745,9 @@ tprts:Divider()
 local function GetPlayerNames()
     local playerList = Players:GetPlayers()
     for index, value in playerList do
-        playerList[index] = value.Name
+        if value ~= Players.LocalPlayer then
+            playerList[index] = value.Name
+        end
     end
     return playerList
 end
