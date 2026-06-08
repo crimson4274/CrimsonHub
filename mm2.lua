@@ -57,7 +57,7 @@ table.insert(conns, RunService.RenderStepped:Connect(function()
         murderer = nil
     end
     for _, player in Players:GetPlayers() do
-        if not playerData[player.Name] and chamsToggle and player ~= Players.LocalPlayer then
+        if not playerData[player.Name] and chamsToggle then
             local char = player.Character or player.CharacterAdded:Wait()
             applyChams(char, Color3.new(0, 1, 0))
         end
@@ -65,7 +65,7 @@ table.insert(conns, RunService.RenderStepped:Connect(function()
     for plr, data in playerData do
         task.spawn(function()
             local player = Players:GetPlayerByUserId(data.UserId)
-            if player == Players.LocalPlayer or not player then return end
+            if not player then return end
             local char = player.Character or player.CharacterAdded:Wait()
             if data.Dead or data.Role == "Innocent" then
                 if data.Role == "Murderer" then
