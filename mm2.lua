@@ -493,6 +493,209 @@ locp:Toggle({
     end
 })
 
+local targetSection = section:Tab({ Title = "Target", Icon = "goal" })
+
+local function GetPlayerNames()
+    local playerList = Players:GetPlayers()
+    for index, value in playerList do
+        playerList[index] = value.Name
+    end
+    return playerList
+end
+
+local currentTarget = nil
+
+local Dropdown = targetSection:Dropdown({
+    Title = "Select Player",
+    Values = GetPlayerNames(),
+    Callback = function(selected)
+        local target = Players:FindFirstChild(tostring(selected))
+        if target then
+            currentTarget = target
+        else
+            currentTarget = nil
+        end
+    end
+})
+
+Players.PlayerAdded:Connect(function(new)
+    Dropdown:Refresh(GetPlayerNames())
+end)
+
+Players.PlayerRemoving:Connect(function(old)
+    Dropdown:Refresh(GetPlayerNames())
+end)
+
+targetSection:Divider()
+
+targetSection:Button({
+    Title = "Teleport to Target",
+    Callback = function()
+        if currentTarget then
+            local hrp = Players.LocalPlayer.Character.HumanoidRootPart
+            local chara = currentTarget.Character
+            if chara then
+                hrp.CFrame = chara.HumanoidRootPart.CFrame + Vector3.new(0, 0, 2)
+            end
+        end
+    end
+})
+
+local function targetFling(target)
+    local char = Players.LocalPlayer.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    local hrp = hum and hum.RootPart
+
+    local tChar = target.Character
+    local tHum
+    local trp
+    local tHead
+
+    if tChar:FindFirstChildOfClass("Humanoid") then
+        tHum = tChar:FindFirstChildOfClass("Humanoid")
+    end
+    if tHum and tHum.RootPart then
+        trp = tHum.RootPart
+    end
+    if tChar:FindFirstChild("Head") then
+        tHead = tChar.Head
+    end
+
+    if char and hum and hrp then
+        if hrp.Velocity.Magnitude < 50 then
+            getgenv()._rootPos = hrp.CFrame
+        end
+        if tHum and tHum.Sit then return end
+        if tHead then
+            workspace.CurrentCamera.CameraSubject = tHead
+        elseif tHum and trp then
+            workspace.CurrentCamera.CameraSubject = tHum
+        end
+        if not tChar:FindFirstChildWhichIsA("BasePart") then return end
+        
+        local function flAng(root, pos, ang)
+            hrp.CFrame = CFrame.new(root.Position) * pos * ang
+            char.PrimaryPart.CFrame = CFrame.new(root.Position) * pos * ang
+            hrp.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
+            hrp.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
+        end
+        
+        local function fling(root)
+            local ftime = 2
+            local ttime = tick()
+            local ang = 0
+
+            repeat
+                if hrp and tHum then
+                    if root.Velocity.Magnitude < 50 then
+                        ang += 100
+
+                        flAng(root, CFrame.new(0, 1.5, 0) + tHum.MoveDirection * root.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(ang), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, -1.5, 0) + tHum.MoveDirection * root.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(ang), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(2.25, 1.5, -2.25) + tHum.MoveDirection * root.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(ang), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(-2.25, -1.5, 2.25) + tHum.MoveDirection * root.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(ang), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, 1.5, 0) + tHum.MoveDirection, CFrame.Angles(math.rad(ang), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, -1.5, 0) + tHum.MoveDirection, CFrame.Angles(math.rad(ang), 0, 0))
+                        task.wait()
+                    else
+                        flAng(root, CFrame.new(0, 1.5, tHum.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, -1.5, -tHum.WalkSpeed), CFrame.Angles(0, 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, 1.5, tHum.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+                        
+                        flAng(root, CFrame.new(0, 1.5, trp.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, -1.5, -trp.Velocity.Magnitude / 1.25), CFrame.Angles(0, 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, 1.5, trp.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, -1.5, 0), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, -1.5 ,0), CFrame.Angles(math.rad(-90), 0, 0))
+                        task.wait()
+
+                        flAng(root, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                        task.wait()
+                    end
+                else
+                    break
+                end
+            until root.Velocity.Magnitude > 500 or root.Parent ~= target.Character or target.Parent ~= Players or target.Character ~= tChar or tHum.Sit or hum.Health <= 0 or tick() > ttime + ftime
+        end
+        
+        workspace.FallenPartsDestroyHeight = 0/0
+        
+        local velo = Instance.new("BodyVelocity")
+        velo.Name = "flingVel"
+        velo.Parent = hrp
+        velo.Velocity = Vector3.new(9e8, 9e8, 9e8)
+        velo.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+        
+        hum:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+        
+        if trp and tHead then
+            if (trp.CFrame.Position - tHead.CFrame.Position).Magnitude > 5 then
+                fling(tHead)
+            else
+                fling(trp)
+            end
+        elseif trp and not tHead then
+            fling(trp)
+        elseif not trp and tHead then
+            fling(tHead)
+        else
+            return
+        end
+        
+        velo:Destroy()
+        hum:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+        workspace.CurrentCamera.CameraSubject = hum
+        
+        repeat
+            hrp.CFrame = getgenv()._rootPos * CFrame.new(0, .5, 0)
+            char.PrimaryPart.CFrame = getgenv()._rootPos * CFrame.new(0, .5, 0)
+            hum:ChangeState("GettingUp")
+            for _, x in ipairs(char:GetChildren) do
+                if x:IsA("BasePart") then
+                    x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
+                end
+            end
+            task.wait()
+        until (hrp.Position - getgenv()._rootPos.Position).Magnitude < 25
+        workspace.FallenPartsDestroyHeight = getgenv().FPDH
+    end
+end
+
+targetSection:Button({
+    Title = "Fling Target",
+    Callback = function()
+        if currentTarget then
+            targetPlayer(currentTarget)
+        end
+    end
+})
+
 local esp = section:Tab({ Title = "ESP", Icon = "square-dashed-top-solid" })
 
 local function removeChams()
@@ -735,39 +938,6 @@ tprts:Button({
         end
     end
 })
-
-tprts:Divider()
-
-local function GetPlayerNames()
-    local playerList = Players:GetPlayers()
-    for index, value in playerList do
-        playerList[index] = value.Name
-    end
-    table.remove(playerList, table.find(playerList, Players.LocalPlayer.Name))
-    return playerList
-end
-
-local Dropdown = tprts:Dropdown({
-    Title = "Player TP",
-    Values = GetPlayerNames(),
-    Callback = function(selected)
-        local hrp = Players.LocalPlayer.Character.HumanoidRootPart
-        local target = Players:FindFirstChild(selected)
-        if not target then return end
-        local chara = target.Character
-        if chara then
-            hrp.CFrame = chara.HumanoidRootPart.CFrame + Vector3.new(0, 0, 2)
-        end
-    end
-})
-
-Players.PlayerAdded:Connect(function(new)
-    Dropdown:Refresh(GetPlayerNames())
-end)
-
-Players.PlayerRemoving:Connect(function(old)
-    Dropdown:Refresh(GetPlayerNames())
-end)
 
 local farm = section:Tab({ Title = "Farm", Icon = "coins" })
 
