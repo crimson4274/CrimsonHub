@@ -91,6 +91,12 @@ table.insert(conns, RunService.RenderStepped:Connect(function()
     end
 end))
 
+table.insert(conns, workspace.DescendantRemoving:Connect(function(a)
+    if a.Name == "GunDrop" then
+        playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
+    end
+end)
+
 table.insert(conns, ReplicatedStorage:WaitForChild("Remotes").Gameplay.PlayerDataChanged.OnClientEvent:Connect(function()
     playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
 end))
