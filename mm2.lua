@@ -1048,7 +1048,6 @@ tprts:Button({
 
 local farm = section:Tab({ Title = "Farm", Icon = "coins" })
 
-local Debris = game:GetService("Debris")
 local TweenService = game:GetService("TweenService")
 
 local coinFarmState = false
@@ -1077,27 +1076,28 @@ local function coinFarm()
                 if x.Name == "CoinContainer" then
                     if x:FindFirstChild("Coin_Server") ~= nil and Players.LocalPlayer.Character ~= nil then
                         Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+                        Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
                         toggleNoclip(true)
                         local nearest, distance = findNearestPart(x)
-                        local value = Instance.new("CFrameValue")
-                        value.Changed:Connect(function()
-                            Players.LocalPlayer.Character:PivotTo(value.Value)
-                        end)
+                        local hrp = Players.LocalPlayer.Character.HumanoidRootPart
+                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(hrp.Position.X, nearest.Position.Y - 3, nearest.Position.Z)
                         tween = TweenService:Create(
-                            value,
+                            Players.LocalPlayer.Character.HumanoidRootPart,
                             TweenInfo.new(
-                                distance / 24,
+                                distance / 36,
                                 Enum.EasingStyle.Linear,
                                 Enum.EasingDirection.Out
                             ),
-                            { Value = nearest.CFrame + Vector3.new(0,2,0) }
+                            { CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y - 3, nearest.Position.Z) }
                         )
                         tween:Play()
                         tween.Completed:Wait()
-                        task.wait(0.25)
+                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(hrp.Position.X, nearest.Position.Y + 2, nearest.Position.Z)
+                        task.wait(0.05)
                         nearest:Destroy()
                     end
                     Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+                    Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
                     toggleNoclip(false)
                 end
             end
@@ -1107,6 +1107,7 @@ local function coinFarm()
         tween:Cancel()
     end
     Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+    Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
     toggleNoclip(false)
 end
 
