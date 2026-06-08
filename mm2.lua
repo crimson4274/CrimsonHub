@@ -363,15 +363,38 @@ locp:Slider({
     end
 })
 
-local invincible = false
+local noclip;
+local clip = true
 
-locp:Toggle({
-    Title = "Noclip (BROKEN)",
+table.insert(conns, Players.LocalPlayer.CharacterAdded:Connect(function()
+    if clip == false then
+        noclip:Set(false)
+    end
+end)
+
+noclip = locp:Toggle({
+    Title = "Noclip",
     Value = false,
     Callback = function(state)
-        noclip = state
+        if state then
+            clip = false
+            task.wait(0.1)
+            local function loop()
+                if clip == false and Players.LocalPlayer.Character ~= nil then
+                    for _, child in ipairs(Players.LocalPlayer.Character:GetDescendants()) do
+                        if child:IsA("BasePart") then child.CanCollide = false end
+                    end
+                end
+            end
+            conns.Noclipping = RunService.Stepped:Connect(loop)
+        else
+            if conns.Noclipping then
+                conns.Noclipping:Disconnect()
+            end
+            clip = true
+        end
     end
-}):Lock()
+})
 
 local flySpeed = 50
 local flying = false
@@ -494,14 +517,6 @@ locp:Slider({
     Step = 1, -- integer steps
     Callback = function(value)
         flySpeed = value
-    end
-})
-
-locp:Toggle({
-    Title = "Invincibility",
-    Value = false,
-    Callback = function(state)
-        invincible = state
     end
 })
 
