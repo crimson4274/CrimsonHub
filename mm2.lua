@@ -1140,7 +1140,6 @@ Window:OnDestroy(function()
     removeGunEsp()
     removeCoinEsp()
     removeNametags()
-    hidePlayerNames()
     toggleInvisibility(false)
     coinFarmState = false
     flying = false
