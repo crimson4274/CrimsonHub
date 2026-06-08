@@ -198,6 +198,7 @@ local function toggleInvisibility(state)
 end
 
 table.insert(conns, Players.LocalPlayer.CharacterAppearanceLoaded:Connect(function()
+    print(invisible)
     if invisible then
         toggleInvisibility(false)
         toggleInvisibility(invisible)
