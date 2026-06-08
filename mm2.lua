@@ -56,7 +56,7 @@ local function applyNametags(char, color)
         local gui = Instance.new("BillboardGui")
         gui.Name = "namegui"
         gui.AlwaysOnTop = true
-        gui.Size = UDim2.new(0, 200, 0, 30)
+        gui.Size = UDim2.new(0, 200, 0, 25)
         gui.StudsOffsetWorldSpace = Vector3.new(0, 2, 0)
         gui.Parent = head
         
@@ -428,28 +428,30 @@ table.insert(conns, Players.LocalPlayer.CharacterAdded:Connect(function()
     end
 end))
 
+local function toggleNoclip(state)
+    if state then
+        clip = false
+        task.wait(0.1)
+        local function loop()
+            if clip == false and Players.LocalPlayer.Character ~= nil then
+                for _, child in ipairs(Players.LocalPlayer.Character:GetDescendants()) do
+                    if child:IsA("BasePart") then child.CanCollide = false end
+                end
+            end
+        end
+        conns.Noclipping = RunService.Stepped:Connect(loop)
+    else
+        if conns.Noclipping then
+            conns.Noclipping:Disconnect()
+        end
+        clip = true
+    end
+end
+
 noclip = locp:Toggle({
     Title = "Noclip",
     Value = false,
-    Callback = function(state)
-        if state then
-            clip = false
-            task.wait(0.1)
-            local function loop()
-                if clip == false and Players.LocalPlayer.Character ~= nil then
-                    for _, child in ipairs(Players.LocalPlayer.Character:GetDescendants()) do
-                        if child:IsA("BasePart") then child.CanCollide = false end
-                    end
-                end
-            end
-            conns.Noclipping = RunService.Stepped:Connect(loop)
-        else
-            if conns.Noclipping then
-                conns.Noclipping:Disconnect()
-            end
-            clip = true
-        end
-    end
+    Callback = toggleNoclip
 })
 
 local flySpeed = 50
@@ -774,7 +776,7 @@ targetSection:Button({
     Title = "Fling Target",
     Callback = function()
         if currentTarget then
-            targetPlayer(currentTarget)
+            targetFling(currentTarget)
         end
     end
 })
@@ -1075,6 +1077,7 @@ local function coinFarm()
                 if x.Name == "CoinContainer" then
                     if x:FindFirstChild("Coin_Server") ~= nil then
                         Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+                        toggleNoclip(true)
                         local nearest, distance = findNearestPart(x)
                         tween = TweenService:Create(
                             Players.LocalPlayer.Character.HumanoidRootPart,
@@ -1091,6 +1094,7 @@ local function coinFarm()
                         nearest:Destroy()
                     end
                     Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+                    toggleNoclip(false)
                 end
             end
         end
@@ -1099,6 +1103,7 @@ local function coinFarm()
         tween:Cancel()
     end
     Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+    toggleNoclip(false)
 end
 
 farm:Toggle({
@@ -1131,6 +1136,7 @@ Window:OnDestroy(function()
     removeGunEsp()
     removeCoinEsp()
     hidePlayerNames()
+    toggleInvisibility(false)
     coinFarmState = false
     flying = false
     toggleFly()
