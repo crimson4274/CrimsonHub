@@ -1080,7 +1080,7 @@ local function coinFarm()
                         toggleNoclip(true)
                         local nearest, distance = findNearestPart(x)
                         local hrp = Players.LocalPlayer.Character.HumanoidRootPart
-                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(hrp.Position.X, nearest.Position.Y - 3, nearest.Position.Z)
+                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(hrp.Position.X, nearest.Position.Y - 3, hrp.Position.Z)
                         tween = TweenService:Create(
                             Players.LocalPlayer.Character.HumanoidRootPart,
                             TweenInfo.new(
@@ -1092,7 +1092,7 @@ local function coinFarm()
                         )
                         tween:Play()
                         tween.Completed:Wait()
-                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(hrp.Position.X, nearest.Position.Y + 2, nearest.Position.Z)
+                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y + 2, nearest.Position.Z)
                         task.wait(0.05)
                         nearest:Destroy()
                     end
