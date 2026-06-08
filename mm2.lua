@@ -1079,14 +1079,18 @@ local function coinFarm()
                         Players.LocalPlayer.Character.Humanoid.PlatformStand = true
                         toggleNoclip(true)
                         local nearest, distance = findNearestPart(x)
+                        local value = Instance.new("CFrameValue")
+                        value.Changed:Connect(function()
+                            Players.LocalPlayer.Character:PivotTo(value.Value)
+                        end)
                         tween = TweenService:Create(
-                            Players.LocalPlayer.Character.HumanoidRootPart,
+                            value,
                             TweenInfo.new(
                                 distance / 24,
                                 Enum.EasingStyle.Linear,
                                 Enum.EasingDirection.Out
                             ),
-                            { CFrame = nearest.CFrame + Vector3.new(0,2,0) }
+                            { Value = nearest.CFrame + Vector3.new(0,2,0) }
                         )
                         tween:Play()
                         tween.Completed:Wait()
