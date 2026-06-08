@@ -1056,10 +1056,12 @@ local function findNearestPart(folder)
     local parts = folder:GetChildren()
     local nearest, distance = nil, math.huge
     for _, v in ipairs(parts) do
-        local dist = (Players.LocalPlayer.Character.HumanoidRootPart.Position - v.CoinVisual.MainCoin.Position).Magnitude
-        if dist < distance then
-            nearest = v
-            distance = dist
+        if v:FindFirstChild("CoinVisual") and v.CoinVisual:FindFirstChild("MainCoin") then
+            local dist = (Players.LocalPlayer.Character.HumanoidRootPart.Position - v.CoinVisual.MainCoin.Position).Magnitude
+            if dist < distance then
+                nearest = v
+                distance = dist
+            end
         end
     end
     return nearest, distance
