@@ -328,7 +328,7 @@ mrd:Button({
     Desc = "Teleport innocents to you",
     Callback = function()
         local myCF = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-        local targetCF = myCF + myCF.LookVector * 3
+        local targetCF = myCF + myCF.LookVector * 2.75
         for _, player in Players:GetPlayers() do
             if player ~= Players.LocalPlayer then
                 local char = player.Character
@@ -1056,7 +1056,7 @@ local function findNearestPart(folder)
     local parts = folder:GetChildren()
     local nearest, distance = nil, math.huge
     for _, v in ipairs(parts) do
-        local dist = (Players.LocalPlayer.Character.HumanoidRootPart.Position - v.MainCoin.Position).Magnitude
+        local dist = (Players.LocalPlayer.Character.HumanoidRootPart.Position - v.CoinVisual.MainCoin.Position).Magnitude
         if dist < distance then
             nearest = v
             distance = dist
