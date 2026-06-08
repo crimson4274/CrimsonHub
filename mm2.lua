@@ -1074,13 +1074,13 @@ local function coinFarm()
             local v = w:GetChildren()
             for _, x in v do
                 if x.Name == "CoinContainer" then
-                    if x:FindFirstChild("Coin_Server") ~= nil and Players.LocalPlayer.Character ~= nil then
+                    if x:FindFirstChild("Coin_Server") ~= nil and x.Coin_Server:FindFirstChild("MainCoin") ~= nil and Players.LocalPlayer.Character ~= nil then
                         Players.LocalPlayer.Character.Humanoid.PlatformStand = true
                         Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
                         toggleNoclip(true)
                         local nearest, distance = findNearestPart(x)
                         local hrp = Players.LocalPlayer.Character.HumanoidRootPart
-                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(hrp.Position.X, nearest.Position.Y - 3, hrp.Position.Z)
+                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(hrp.Position.X, nearest.Position.Y - 4, hrp.Position.Z)
                         tween = TweenService:Create(
                             Players.LocalPlayer.Character.HumanoidRootPart,
                             TweenInfo.new(
@@ -1092,8 +1092,8 @@ local function coinFarm()
                         )
                         tween:Play()
                         tween.Completed:Wait()
-                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y + 2, nearest.Position.Z)
-                        task.wait(0.05)
+                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y + 3, nearest.Position.Z)
+                        task.wait(0.15)
                         nearest:Destroy()
                     end
                     Players.LocalPlayer.Character.Humanoid.PlatformStand = false
