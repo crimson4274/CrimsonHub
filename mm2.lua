@@ -676,7 +676,7 @@ local function targetFling(target)
             hrp.CFrame = getgenv()._rootPos * CFrame.new(0, .5, 0)
             char.PrimaryPart.CFrame = getgenv()._rootPos * CFrame.new(0, .5, 0)
             hum:ChangeState("GettingUp")
-            for _, x in ipairs(char:GetChildren) do
+            for _, x in ipairs(char:GetChildren()) do
                 if x:IsA("BasePart") then
                     x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
                 end
