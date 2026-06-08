@@ -1139,6 +1139,7 @@ Window:OnDestroy(function()
     removeChams()
     removeGunEsp()
     removeCoinEsp()
+    removeNametags()
     hidePlayerNames()
     toggleInvisibility(false)
     coinFarmState = false
