@@ -57,7 +57,7 @@ table.insert(conns, RunService.RenderStepped:Connect(function()
         murderer = nil
     end
     for _, player in Players:GetPlayers() do
-        if not playerData[player.Name] and chamsToggle and player ~= Players.LocalPlaeyr then
+        if not playerData[player.Name] and chamsToggle and player ~= Players.LocalPlayer then
             local char = player.Character or player.CharacterAdded:Wait()
             applyChams(char, Color3.new(0, 1, 0))
         end
