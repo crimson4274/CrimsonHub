@@ -120,93 +120,88 @@ local function grabGun(gunDrop)
     task.delay(0, firetouchinterest, head, gunDrop, false)
 end
 
-local ndd = {}
+local invisible = false
 
-local function hidePlayerNames()
-    for player, dd in ndd do
-        if conns["ShowNames_" .. player.Name] then
-            conns["ShowNames_" .. player.Name]:Disconnect()
-            conns["ShowNames_" .. player.Name] = nil
-        end
-
-        if conns["NameCharAdd_" .. player.Name] then
-            conns["NameCharAdd_" .. player.Name]:Disconnect()
-            conns["NameCharAdd_" .. player.Name] = nil
-        end
-
-        ndd[player] = nil
-        dd[1].NameDisplayDistance = dd[2]
-    end
-end
-
-local function showPlayerNames(player)
-    hidePlayerNames()
-    if player.Character then
-        local char = player.Character
-        local hum = char.Humanoid
-        ndd[player] = {hum, hum.NameDisplayDistance}
-
-        hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
-        conns["ShowNames_" .. player.Name] = hum:GetPropertyChangedSignal("NameDisplayDistance"):Connect(function()
-            ndd[player] = {hum, hum.NameDisplayDistance}
-            hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
-        end)
-
-        conns["NameCharAdd_" .. player.Name] = player.CharacterAdded:Connect(function(new)
-            char = new
-            hum = char:WaitForChild("Humanoid")
-            ndd[player] = {hum, hum.NameDisplayDistance}
-
-            if conns["ShowNames_" .. player.Name] then
-                conns["ShowNames_" .. player.Name]:Disconnect()
-                conns["ShowNames_" .. player.Name] = nil
+local function setCharacterTransparency(transparency)
+    local char = Players.LocalPlayer.Character
+    if char then
+        for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.Transparency = transparency
             end
-
-            hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
-            conns["ShowNames_" .. player.Name] = hum:GetPropertyChangedSignal("NameDisplayDistance"):Connect(function()
-                ndd[player] = {hum, hum.NameDisplayDistance}
-                hum.NameDisplayDistance = game.StarterPlayer.NameDisplayDistance
-            end)
-        end)
+        end
     end
 end
 
-general:Toggle({
-    Title = "Show Player Names",
-    Value = false,
-    Flag = "show_names",
-    Callback = function(state)
-        task.spawn(function()
-            if state then
-                conns.NamePlrAdd = Players.PlayerAdded:Connect(function(player)
-                    showPlayerNames(player)
-                end)
-                conns.NamePlrRem = Players.PlayerRemoving:Connect(function(player)
-                    if conns["ShowNames_" .. player.Name] then
-                        conns["ShowNames_" .. player.Name]:Disconnect()
-                        conns["ShowNames_" .. player.Name] = nil
-                    end
-                    if conns["NameCharAdd_" .. player.Name] then
-                        conns["NameCharAdd_" .. player.Name]:Disconnect()
-                        conns["NameCharAdd_" .. player.Name] = nil
-                    end
-                    ndd[player] = nil
-                end)
-                for _, player in Players:GetPlayers() do
-                    showPlayerNames(player)
+local invisToggle;
+local seatPos;
+
+local function toggleInvisibility(state)
+    invisible = state
+    if invisible then
+        setCharacterTransparency(0.75)
+        local char = Players.LocalPlayer.Character
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local savedPos = hrp.CFrame
+                task.wait(0.05)
+                
+                pcall(char.MoveTo, char, Vector3.new(-40, 400, 4000))
+                task.wait(0.05)
+                
+                if not char:FindFirstChild("HumanoidRootPart") or char.HumanoidRootPart.Position.Y < -50 then
+                    pcall(char.MoveTo, char, savedPos)
+                    invisToggle:Set(false)
+                    return
+                end
+                
+                local seat = Instance.new("Seat")
+                seat.Name = "InvisibilitySeat"
+                seat.Transparency = 1
+                seat.Position = Vector3.new(-40, 400, 4000)
+                seat.Anchored = false
+                seat.CanCollide = false
+                seat.Parent = workspace
+
+                local weld = Instance.new("Weld")
+                weld.Part0 = seat
+
+                local torso = char:FindFirstChild("UpperTorso")
+                if torso then
+                    weld.Part1 = torso
+                    weld.Parent = seat
+                    task.wait()
+                    
+                    pcall(function()
+                        seat.CFrame = savedPos
+                    end)
+
+                    seatPos = seat.Position
+                else
+                    seat:Destroy()
+                    seatPos = nil
                 end
             else
-                if conns.NamePlrAdd and conns.NamePlrRem then
-                    conns.NamePlrAdd:Disconnect()
-                    conns.NamePlrRem:Disconnect()
-                    conns.NamePlrAdd = nil
-                    conns.NamePlrRem = nil
-                end
-                hidePlayerNames()
+                seatPos = nil
+            end
+        end
+    else
+        setCharacterTransparency(0)
+        task.spawn(function()
+            if workspace:FindFirstChild("InvisibilitySeat") then
+                pcall(workspace.InvisibilitySeat.Destroy, workspace.InvisibilitySeat)
             end
         end)
+        seatPos = nil
     end
-}):Lock()
+end
+
+invisToggle = general:Toggle({
+    Title = "Invisibility",
+    Value = false,
+    Callback = toggleInvisibility
+})
 
 general:Toggle({
     Title = "Auto Gun Grab",
