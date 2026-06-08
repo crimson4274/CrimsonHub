@@ -40,7 +40,41 @@ local function applyChams(char, color)
     h.Parent = char
 end
 
+local function applyNametags(char, color)
+    if not char then return end
+    
+    local head = char:FindFirstChild("Head")
+    if head then
+        local nametag = head:FindFirstChild("namegui")
+
+        if nametag then
+            nametag.Tag.Text = char.Name
+            nametag.Tag.TextColor3 = color
+            return
+        end
+
+        local gui = Instance.new("BillboardGui")
+        gui.Name = "namegui"
+        gui.AlwaysOnTop = true
+        gui.Size = UDim2.new(0, 200, 0, 30)
+        gui.StudsOffsetWorldSpace = Vector3.new(0, 2, 0)
+        gui.Parent = head
+        
+        local label = Instance.new("TextLabel")
+        label.Name = "Tag"
+        label.Size = UDim2.new(1, 0, 1, 0)
+        label.Text = char.Name
+        label.BackgroundTransparency = 1
+        label.Font = Enum.Font.SourceSansBold
+        label.TextColor3 = Color3.new(0, 1, 0)
+        label.TextStrokeTransparency = 0.5
+        label.TextScaled = true
+        label.Parent = gui
+    end
+end
+
 local chamsToggle = false
+local nametagToggle = false
 
 local sheriff, murderer = nil, nil
 
@@ -57,9 +91,15 @@ table.insert(conns, RunService.RenderStepped:Connect(function()
         murderer = nil
     end
     for _, player in Players:GetPlayers() do
-        if not playerData[player.Name] and chamsToggle and player ~= Players.LocalPlayer then
+        if not playerData[player.Name] and player ~= Players.LocalPlayer then
             local char = player.Character or player.CharacterAdded:Wait()
-            applyChams(char, Color3.new(0, 1, 0))
+            if chamsToggle then
+                applyChams(char, Color3.new(0, 1, 0))
+            end
+
+            if nametagToggle then
+                applyNametags(char, Color3.new(0, 1, 0))
+            end
         end
     end
     for plr, data in playerData do
@@ -73,18 +113,33 @@ table.insert(conns, RunService.RenderStepped:Connect(function()
                 elseif data.Role == "Sheriff" or data.Role == "Hero" then
                     sheriff = nil
                 end
+                            
                 if chamsToggle then
                     applyChams(char, Color3.new(0, 1, 0))
                 end
+
+                if nametagToggle then
+                    applyNametags(char, Color3.new(0, 1, 0))
+                end
             elseif data.Role == "Sheriff" or data.Role == "Hero" then
                 sheriff = player
+                            
                 if chamsToggle then
                     applyChams(char, Color3.new(0, 0.4, 1))
                 end
+
+                if nametagToggle then
+                    applyNametags(char, Color3.new(0, 0.4, 1))
+                end
             elseif data.Role == "Murderer" then
                 murderer = player
+                            
                 if chamsToggle then
                     applyChams(char, Color3.new(1, 0, 0))
+                end
+
+                if nametagToggle then
+                    applyNametags(char, Color3.new(1, 0, 0))
                 end
             end
         end)
@@ -833,6 +888,28 @@ esp:Toggle({
         end
         if state == false then
             removeGunEsp()
+        end
+    end
+})
+
+local function removeNametags()
+    for _, player in Players:GetPlayers() do
+        if player.Character then
+            local gui = player.Character.Head:FindFirstChild("namegui")
+            if gui then gui:Destroy() end
+        end
+    end
+end
+
+esp:Toggle({
+    Title = "Nametag ESP",
+    Type = "Checkbox",
+    Flag = "nametag_esp",
+    Value = false,
+    Callback = function(state)
+        nametagToggle = state
+        if state == false then
+            removeNametags()
         end
     end
 })
