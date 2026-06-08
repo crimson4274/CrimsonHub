@@ -370,7 +370,7 @@ table.insert(conns, Players.LocalPlayer.CharacterAdded:Connect(function()
     if clip == false then
         noclip:Set(false)
     end
-end)
+end))
 
 noclip = locp:Toggle({
     Title = "Noclip",
