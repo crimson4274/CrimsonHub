@@ -197,21 +197,18 @@ local function toggleInvisibility(state)
     end
 end
 
+table.insert(conns, Players.LocalPlayer.CharacterAppearanceLoaded:Connect(function()
+    if invisible then
+        toggleInvisibility(false)
+        toggleInvisibility(invisible)
+    end
+end))
+
 invisToggle = general:Toggle({
     Title = "Invisibility",
     Value = false,
     Callback = function(state)
         toggleInvisibility(state)
-            
-        if conns.InvisCharAdd then
-            conns.InvisCharAdd:Disconnect()
-        end
-            
-        if state then
-            conns.InvisCharAdd = Players.LocalPlayer.CharacterAppearanceLoaded:Connect(function()
-                toggleInvisibility(state)
-            end)
-        end
     end,
 })
 
