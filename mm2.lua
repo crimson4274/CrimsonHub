@@ -200,7 +200,19 @@ end
 invisToggle = general:Toggle({
     Title = "Invisibility",
     Value = false,
-    Callback = toggleInvisibility
+    Callback = function(state)
+        toggleInvisibility(state)
+            
+        if conns.InvisCharAdd then
+            conns.InvisCharAdd:Disconnect()
+        end
+            
+        if state then
+            conns.InvisCharAdd = Players.LocalPlayer.CharacterAppearanceLoaded:Connect(function()
+                toggleInvisibility(state)
+            end)
+        end
+    end,
 })
 
 general:Toggle({
