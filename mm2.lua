@@ -1071,36 +1071,38 @@ local function coinFarm()
     local tween
     repeat
         task.wait(.25)
-        local ws = workspace:GetChildren()
-        for _, w in ws do
-            local v = w:GetChildren()
-            for _, x in v do
-                if x.Name == "CoinContainer" then
-                    if x:FindFirstChild("MainCoin", true) ~= nil and Players.LocalPlayer.Character ~= nil then
-                        Players.LocalPlayer.Character.Humanoid.PlatformStand = true
-                        Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-                        toggleNoclip(true)
-                        local nearest, distance = findNearestPart(x)
-                        local hrp = Players.LocalPlayer.Character.HumanoidRootPart
-                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(hrp.Position.X, nearest.Position.Y - 4, hrp.Position.Z)
-                        tween = TweenService:Create(
-                            Players.LocalPlayer.Character.HumanoidRootPart,
-                            TweenInfo.new(
-                                distance / 36,
-                                Enum.EasingStyle.Linear,
-                                Enum.EasingDirection.Out
-                            ),
-                            { CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y - 3, nearest.Position.Z) }
-                        )
-                        tween:Play()
-                        tween.Completed:Wait()
-                        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y + 3, nearest.Position.Z)
-                        task.wait(0.15)
-                        nearest:Destroy()
+        if playerData[Players.LocalPlayer.Name] and playerData[Players.LocalPlayer.Name].Dead == false then
+            local ws = workspace:GetChildren()
+            for _, w in ws do
+                local v = w:GetChildren()
+                for _, x in v do
+                    if x.Name == "CoinContainer" then
+                        if x:FindFirstChild("MainCoin", true) ~= nil and Players.LocalPlayer.Character ~= nil then
+                            Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+                            Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+                            toggleNoclip(true)
+                            local nearest, distance = findNearestPart(x)
+                            local hrp = Players.LocalPlayer.Character.HumanoidRootPart
+                            Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(hrp.Position.X, nearest.Position.Y - 4, hrp.Position.Z)
+                            tween = TweenService:Create(
+                                Players.LocalPlayer.Character.HumanoidRootPart,
+                                TweenInfo.new(
+                                    distance / 36,
+                                    Enum.EasingStyle.Linear,
+                                    Enum.EasingDirection.Out
+                                ),
+                                { CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y - 3, nearest.Position.Z) }
+                            )
+                            tween:Play()
+                            tween.Completed:Wait()
+                            Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y + 3, nearest.Position.Z)
+                            task.wait(0.15)
+                            nearest:Destroy()
+                        end
+                        Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+                        Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+                        toggleNoclip(false)
                     end
-                    Players.LocalPlayer.Character.Humanoid.PlatformStand = false
-                    Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
-                    toggleNoclip(false)
                 end
             end
         end
