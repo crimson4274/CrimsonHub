@@ -48,8 +48,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
-local CurrentRoundClient = require(ReplicatedStorage:WaitForChild("Modules").CurrentRoundClient)
-
 local conns = {}
 local playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
 
@@ -95,7 +93,7 @@ table.insert(conns, RunService.RenderStepped:Connect(function()
     end
 end))
 
-table.insert(conns, CurrentRoundClient.PlayerDataChanged.Event:Connect(function()
+table.insert(conns, ReplicatedStorage:WaitForChild("Remotes").Gameplay.PlayerDataChanged.OnClientEvent:Connect(function()
     playerData = ReplicatedStorage.Remotes.Gameplay.GetCurrentPlayerData:InvokeServer()
 end))
 
