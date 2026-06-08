@@ -1075,7 +1075,7 @@ local function coinFarm()
             local v = w:GetChildren()
             for _, x in v do
                 if x.Name == "CoinContainer" then
-                    if x:FindFirstChild("Coin_Server") ~= nil then
+                    if x:FindFirstChild("Coin_Server") ~= nil and Players.LocalPlayer.Character ~= nil then
                         Players.LocalPlayer.Character.Humanoid.PlatformStand = true
                         toggleNoclip(true)
                         local nearest, distance = findNearestPart(x)
