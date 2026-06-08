@@ -1055,8 +1055,8 @@ local coinFarmState = false
 local function findNearestPart(folder)
     local parts = folder:GetChildren()
     local nearest, distance = nil, math.huge
-    for _, v in parts do
-        local dist = (Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Position).Magnitude
+    for _, v in ipairs(parts) do
+        local dist = (Players.LocalPlayer.Character.HumanoidRootPart.Position - v.MainCoin.Position).Magnitude
         if dist < distance then
             nearest = v
             distance = dist
@@ -1074,7 +1074,7 @@ local function coinFarm()
             local v = w:GetChildren()
             for _, x in v do
                 if x.Name == "CoinContainer" then
-                    if x:FindFirstChild("Coin_Server") ~= nil and x.Coin_Server:FindFirstChild("MainCoin") ~= nil and Players.LocalPlayer.Character ~= nil then
+                    if x:FindFirstChild("MainCoin", true) ~= nil and Players.LocalPlayer.Character ~= nil then
                         Players.LocalPlayer.Character.Humanoid.PlatformStand = true
                         Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
                         toggleNoclip(true)
