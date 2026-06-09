@@ -1056,8 +1056,8 @@ local function findNearestPart(folder)
     local parts = folder:GetChildren()
     local nearest, distance = nil, math.huge
     for _, v in ipairs(parts) do
-        if v:FindFirstChild("CoinVisual") and v.CoinVisual:FindFirstChild("MainCoin") then
-            local dist = (Players.LocalPlayer.Character.HumanoidRootPart.Position - v.CoinVisual.MainCoin.Position).Magnitude
+        if v:FindFirstChild("MainCoin", true) and v:FindFirstChild("TouchInterest") then
+            local dist = (Players.LocalPlayer.Character.HumanoidRootPart.Position - v:FindFirstChild("MainCoin", true).Position).Magnitude
             if dist < distance then
                 nearest = v
                 distance = dist
@@ -1069,15 +1069,17 @@ end
 
 local function coinFarm()
     local tween
+    local conn
     repeat
         task.wait(.25)
+        conn:Disconnect()
         if playerData[Players.LocalPlayer.Name] and playerData[Players.LocalPlayer.Name].Dead == false then
             local ws = workspace:GetChildren()
             for _, w in ws do
                 local v = w:GetChildren()
                 for _, x in v do
                     if x.Name == "CoinContainer" then
-                        if x:FindFirstChild("MainCoin", true) ~= nil and Players.LocalPlayer.Character ~= nil then
+                        if x:FindFirstChild("MainCoin", true) ~= nil and x:FindFirstChild("TouchInterest", true) ~= nil and Players.LocalPlayer.Character ~= nil then
                             Players.LocalPlayer.Character.Humanoid.PlatformStand = true
                             Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
                             toggleNoclip(true)
@@ -1091,15 +1093,15 @@ local function coinFarm()
                                     Enum.EasingStyle.Linear,
                                     Enum.EasingDirection.Out
                                 ),
-                                { CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y - 3, nearest.Position.Z) }
+                                { CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y - 4, nearest.Position.Z) }
                             )
                             tween:Play()
-                            tween.Completed:Wait()
-                            Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y + 2, nearest.Position.Z)
-                            task.wait(0.05)
-                            Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y - 4, nearest.Position.Z)
-                            task.wait(0.15)
-                            nearest:Destroy()
+                            conn = tween.Completed:Once(function()
+                                Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y + 2, nearest.Position.Z)
+                                task.wait(0.05)
+                                Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(nearest.Position.X, nearest.Position.Y - 4, nearest.Position.Z)
+                            end)
+                            nearest.TouchInterest.Destroying:Wait()
                         end
                         Players.LocalPlayer.Character.Humanoid.PlatformStand = false
                         Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
@@ -1111,6 +1113,9 @@ local function coinFarm()
     until not coinFarmState
     if tween then
         tween:Cancel()
+    end
+    if conn then
+        conn:Disconnect()
     end
     Players.LocalPlayer.Character.Humanoid.PlatformStand = false
     Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
